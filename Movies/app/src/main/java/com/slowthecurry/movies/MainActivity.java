@@ -2,6 +2,8 @@ package com.slowthecurry.movies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,8 +41,16 @@ public class MainActivity extends AppCompatActivity
     private String current;
 
     public void displayMovies(String list) {
-        MovieFinder movieFinder = new MovieFinder();
-        movieFinder.execute(list);
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo != null && networkInfo.isConnected()) {
+            MovieFinder movieFinder = new MovieFinder();
+            movieFinder.execute(list);
+        }else{
+            ImageView imageView = (ImageView) findViewById(R.id.trex);
+            imageView.setImageResource(R.drawable.trex);
+        }
 
     }
 
@@ -67,20 +78,21 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final GridView posterGrid = (GridView) findViewById(R.id.poster_grid);
-        ArrayList<MovieItem> movieList = new ArrayList<>();
-        mAdapter = new MovieAdapter(this, movieList);
-        posterGrid.setAdapter(mAdapter);
-        posterGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieItem clickedMovie = mAdapter.getItem(position);
-                Log.d("selected", clickedMovie.getTitle());
-                Intent intent = new Intent(context, Detail.class);
-                intent.putExtra(Constants.MOVIE_EXTRA, clickedMovie);
-                startActivity(intent);
-            }
-        });
+
+            final GridView posterGrid = (GridView) findViewById(R.id.poster_grid);
+            ArrayList<MovieItem> movieList = new ArrayList<>();
+            mAdapter = new MovieAdapter(this, movieList);
+            posterGrid.setAdapter(mAdapter);
+            posterGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    MovieItem clickedMovie = mAdapter.getItem(position);
+                    Log.d("selected", clickedMovie.getTitle());
+                    Intent intent = new Intent(context, Detail.class);
+                    intent.putExtra(Constants.MOVIE_EXTRA, clickedMovie);
+                    startActivity(intent);
+                }
+            });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

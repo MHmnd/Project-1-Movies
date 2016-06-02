@@ -13,7 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="2"
-
         />
+    <ImageView
+        android:id="@+id/trex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"/>
+
+
 
 </android.support.constraint.ConstraintLayout>
